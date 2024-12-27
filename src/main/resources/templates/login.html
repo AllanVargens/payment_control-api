@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+<h2>Login</h2>
+<form id="loginForm" method="post">
+    <label for="username">Username: </label><br>
+    <input type="text" id="username" name="username"><br><br>
+
+    <label for="password">Password: </label><br>
+    <input type="password" id="password" name="password"><br><br>
+
+    <button type="submit">Login</button>
+</form>
+
+<!-- Exibe mensagens de erro -->
+<div th:if="${param.error}">
+    <p style="color:red;">Invalid username or password</p>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/auth/login?username=' + username + '&password=' + password, {
+            method: 'POST',
+        })
+        .then(response => response.text())
+        .then(data => {
+            if (data.startsWith("Bearer ")) {
+                localStorage.setItem('jwt', data);  // Armazena o token JWT
+                window.location.href = '/h2-console'; // Redireciona para uma página após login
+            } else {
+                alert(data); // Exibe a mensagem de erro
+            }
+        });
+    });
+</script>
+</body>
+</html>

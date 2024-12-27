@@ -1,0 +1,1 @@
+INSERT INTO user_info VALUES (11, "allan.vargens", "allanvargens@gmail.com", "allanzinho10", "ADMIN");
