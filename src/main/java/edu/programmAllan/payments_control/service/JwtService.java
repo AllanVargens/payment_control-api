@@ -5,22 +5,28 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@PropertySource(value = { "classpath:application.properties" })
 public class JwtService {
-    public static final String SECRET = "f37dbb25-db47-4c5c-834d-7525f7bb6c06";
+    public static final String SECRET = "f371a0727dff26224459a4f21fdf189388eb1cbfd81713b8ec131e87f5a8805c";
 
     // Generate token with given user name
-    public String generateToken(String userName) {
-        Map<String, Object> claims =  new HashMap<>();
+    public String generateToken(String userName, List<String> roles) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", roles);
         return createToken(claims, userName);
     }
 
@@ -43,6 +49,11 @@ public class JwtService {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+    // extract the roles from the token
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("roles", List.class);
+    }
 
     // extract the expiration date from the token
     public Date extractExpiration(String token) {
@@ -56,7 +67,7 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    //extract all claims from the token
+    // extract all claims from the token
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignKey())

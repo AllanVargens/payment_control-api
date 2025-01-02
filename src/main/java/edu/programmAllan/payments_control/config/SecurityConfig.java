@@ -1,6 +1,5 @@
 package edu.programmAllan.payments_control.config;
 
-
 import edu.programmAllan.payments_control.filter.JwtAuthFilter;
 import edu.programmAllan.payments_control.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,8 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, AuthenticationProvider authenticationProvider, UserDetailsService userDetailsService) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, AuthenticationProvider authenticationProvider,
+            UserDetailsService userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.authenticationProvider = authenticationProvider;
         this.userDetailsService = userDetailsService;
@@ -42,11 +42,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/welcome", "/auth/addNewUser", "/auth/generateToken", "h2-console").permitAll()
-                        .requestMatchers("/auth/user/**").hasAuthority("ROLE_USER")
-                        .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers("/auth/welcome", "/auth/addNewUser", "/auth/generateToken").permitAll()
+                        .requestMatchers("/auth/user/**").hasAuthority("USER")
+                        .requestMatchers("/auth/admin/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
